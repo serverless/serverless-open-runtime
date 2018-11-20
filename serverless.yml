@@ -7,6 +7,6 @@ plugins:
   - serverless-lambda-layers
 
 layers:
-  testRuntime:
-    #buildScript: ./build.sh
+  testRuntime: # TODO rename (holding off bc of the permanant nature of layers)
+    buildScript: ./build.sh
     path: layer
