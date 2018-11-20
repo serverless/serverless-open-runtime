@@ -1,0 +1,1 @@
+export beta='--endpoint-url https://beta-04-2014-fe-alb-1663246439.us-west-2.elb.amazonaws.com --region us-west-2 --no-verify-ssl'
