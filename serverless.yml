@@ -1,0 +1,13 @@
+service: aws-lambda-layer
+
+provider:
+  name: aws
+
+plugins:
+  - serverless-lambda-layers
+
+layers:
+  test:
+    layerName: test-layer
+    buildScript: ./build.sh
+    path: layer
