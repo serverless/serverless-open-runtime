@@ -26,7 +26,10 @@ The current proof of concept for middlewares is built around the decorator patte
 middleware should be a function that accepts a handler and returns a new handler. EG:
 ```javascript
 const middleware = async (handler) => (event) => {
+  // do something before invocation
   const resp = await handler(event)
+  // do something after invocation
+  return resp
 }
 ```
 
