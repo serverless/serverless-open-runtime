@@ -9,6 +9,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "aws-sdk": "^2.360.0",
     "node-fetch": "^2.3.0"
   }
 }
