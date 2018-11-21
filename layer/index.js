@@ -11,6 +11,9 @@ module.exports = async function() {
   // Runtime API URL
   const runtimeAPI = `http://${process.env.AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime`
 
+  const lambdaInfo = await lambda.getFunction({FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME}).promise()
+  console.log(JSON.stringify(lambdaInfo, null, 2))
+
   // import the user's function
   const [modName, funcName] = process.env._HANDLER.split('.')
   const mod = require(modName)
@@ -19,14 +22,18 @@ module.exports = async function() {
 
   // Apply any middlewares
   for (const middlewareName of (process.env.SLSMIDDLEWARES||'').split(',')) {
-    func = middleware(middlewareName)(func)
+    const middleware = require(middlewareName)
+    func = middleware(func)
   }
 
+  process.on('SIGTERM', () => console.error('Function timed out!'))
 
   // lōōpz
   while (true) {
     // Request the next event from the Lambda Runtime
     const invocationResp = await fetch(`${runtimeAPI}/invocation/next`)
+
+    setTimeout(() => process.kill(process.pid, 'SIGTERM'), 1000 * lambdaInfo.Timeout - 10)
 
     // get the invocation ID & parse the event payload
     const invocationId = invocationResp.headers.get('lambda-runtime-aws-request-id')
