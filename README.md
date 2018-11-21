@@ -35,8 +35,8 @@ const middleware = async (handler) => (event) => {
 
 Handlers must be async and can safely assume that the handler it is provided also is async.
 
-It is preferable to package a middleware as a layer, but that is optional. The main requirement is
-that it be `require`able and that the middleware be exported as default.
+Middlewares must be packaged and included as Lambda Layers, and the name of the layer must be the
+same as the node module to `require`.
 
-To specify the handler middlewares your function should use, set the `SLSMIDDLEWARES` environment
-variable to a comma delimited list of middlewares by the name by which they are to be `require`d
+To specify the handler middlewares your function should use, include the layer a middleware is
+included in with your lambda function.

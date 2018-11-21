@@ -5,20 +5,18 @@ set -e
 . ./env
 
 LAYER="$(sls layers info -l testRuntime --latest-arn-only) $(sls layers info -l testMiddleware --latest-arn-only)"
-SLSMIDDLEWARES=test-middleware
 ROLE=arn:aws:iam::377024778620:role/Test-Role
 
 rm -f testRuntime-lambda.zip
-cd example && zip ../testRuntime-lambda.zip handler.js && cd -
+cd example && zip -r ../testRuntime-lambda.zip handler.js node_modules && cd -
 aws s3 cp ./testRuntime-lambda.zip s3://dschep-byol/testRuntime-lambda.zip
 aws $beta lambda create-function \
     --function-name=testRuntime-test \
     --runtime=byol \
     --code=S3Bucket=dschep-byol,S3Key=testRuntime-lambda.zip \
     --role=$ROLE \
-    --timeout=5 \
+    --timeout=10 \
     --handler=handler.hello \
-    --environment "Variables={SLSMIDDLEWARES=$SLSMIDDLEWARES}" \
     --layers $LAYER
 
 aws $beta lambda invoke --function-name=testRuntime-test --log-type Tail out > resp

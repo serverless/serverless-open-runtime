@@ -1,4 +1,16 @@
 const fetch = require('node-fetch')
+const AWS = require('aws-sdk')
+
+// BETA ENV STUFF
+const { Agent } = require('https')
+AWS.config.update({ region: 'us-west-2' })
+AWS.NodeHttpClient.sslAgent = new Agent({ rejectUnauthorized: false })
+
+const lambda = new AWS.Lambda({
+  // BETA ENV STUFF
+  endpoint: 'https://beta-04-2014-fe-alb-1663246439.us-west-2.elb.amazonaws.com'
+})
+
 
 module.exports = async function() {
   console.log("Starting node sls runtime.")
@@ -9,6 +21,8 @@ module.exports = async function() {
   // Runtime API URL
   const runtimeAPI = `http://${process.env.AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime`
 
+  const lambdaInfo = await lambda.getFunction({FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME}).promise()
+
   // import the user's function
   const [modName, funcName] = process.env._HANDLER.split('.')
   const mod = require(modName)
@@ -16,7 +30,11 @@ module.exports = async function() {
   let func = (event) => Promise.resolve(mod[funcName](event))
 
   // Apply any middlewares
-  for (const middlewareName of (process.env.SLSMIDDLEWARES||'').split(',')) {
+  for (const {Arn} of lambdaInfo.Configuration.Layers) {
+    const middlewareName = Arn.split(':')[6]
+    if (middlewareName === 'testRuntime') {
+      continue
+    }
     const middleware = require(middlewareName)
     func = middleware(func)
   }
