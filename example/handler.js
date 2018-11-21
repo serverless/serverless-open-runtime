@@ -1,3 +1,3 @@
 module.exports.hello = (event) => {
-  return 'foobar'
+  return process.env
 }

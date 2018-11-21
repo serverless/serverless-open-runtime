@@ -10,3 +10,5 @@ layers:
   testRuntime: # TODO rename (holding off bc of the permanant nature of layers)
     buildScript: ./build.sh
     path: layer
+  testMiddleware:
+    path: middleware

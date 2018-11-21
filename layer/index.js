@@ -12,7 +12,14 @@ module.exports = async function() {
   // import the user's function
   const [modName, funcName] = process.env._HANDLER.split('.')
   const mod = require(modName)
-  const func = mod[funcName]
+  let func = mod[funcName]
+
+  // Apply any middlewares
+  for (const middlewareName of (process.env.SLSMIDDLEWARES||'').split(',')) {
+    const middleware = require(middlewareName)
+    func = middleware(func)
+  }
+
 
   // lōōpz
   while (true) {

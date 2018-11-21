@@ -1,2 +1,8 @@
 .serverless/
 node_modules/
+
+# beta env script outputs
+/log
+/out
+/resp
+/testRuntime-lambda.zip
