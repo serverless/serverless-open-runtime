@@ -12,7 +12,8 @@ module.exports = async function() {
   // import the user's function
   const [modName, funcName] = process.env._HANDLER.split('.')
   const mod = require(modName)
-  let func = mod[funcName]
+  // wrap with a Promise just in case the user defined a syncronous function
+  let func = (event) => Promise.resolve(mod[funcName](event))
 
   // Apply any middlewares
   for (const middlewareName of (process.env.SLSMIDDLEWARES||'').split(',')) {
