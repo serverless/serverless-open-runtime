@@ -22,8 +22,6 @@ aws $beta lambda create-function \
     --layers $LAYER
 
 aws $beta lambda invoke --function-name=testRuntime-test --log-type Tail out > resp
-jq -r .LogResult resp > log
-# py = https://gist.github.com/dschep/4358be665537463b9271f782e77ff85f
-py 'print(base64.b64decode(open("log").read()))'
+jq -r .LogResult resp | base64 --decode
 cat out #python -m json.tool out
 aws $beta lambda delete-function --function-name=testRuntime-test
