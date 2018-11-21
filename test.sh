@@ -4,8 +4,7 @@ set -e
 
 . ./env
 
-# need to update the version in this ARN on every `sls layers publish`
-LAYER=arn:aws:lambda:us-west-2:377024778620:layer:testRuntime:11
+LAYER=$(sls layers info -l testRuntime --latest-arn-only)
 ROLE=arn:aws:iam::377024778620:role/Test-Role
 
 rm -f testRuntime-lambda.zip
