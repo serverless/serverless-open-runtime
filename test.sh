@@ -5,6 +5,7 @@ set -e
 . ./env
 
 LAYER="$(sls layers info -l testRuntime --latest-arn-only) $(sls layers info -l testMiddleware --latest-arn-only)"
+SLSMIDDLEWARES=test-middleware
 ROLE=arn:aws:iam::377024778620:role/Test-Role
 
 rm -f testRuntime-lambda.zip
@@ -17,7 +18,7 @@ aws $beta lambda create-function \
     --role=$ROLE \
     --timeout=5 \
     --handler=handler.hello \
-    --environment 'Variables={SLSMIDDLEWARES=test-middleware}' \
+    --environment "Variables={SLSMIDDLEWARES=$SLSMIDDLEWARES}" \
     --layers $LAYER
 
 aws $beta lambda invoke --function-name=testRuntime-test --log-type Tail out > resp
