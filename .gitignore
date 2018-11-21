@@ -1,6 +1,9 @@
 .serverless/
 node_modules/
 
+# for now the sample middleware isn't even a packagable thign yet, checking in node_modules for it
+!/middleware/node_modules
+
 # beta env script outputs
 /log
 /out
