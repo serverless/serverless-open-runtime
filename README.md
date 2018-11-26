@@ -26,7 +26,7 @@ cp lambda-layers-plugin/lambda-2015-03-31.normal.json $(dirname $(dirname $(whic
 
 ```shell
 cd example
-sls deplopy
+sls deploy
 sls invoke -f hello
 ```
 

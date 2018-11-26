@@ -105,32 +105,7 @@ const transformSyncEvent = (event) => {
   return event
 }
 
-module.exports.handler = (e, ctx, cb) => {
-  const context = {
-    name: ctx.functionName,
-    invocationId: ctx.awsRequestId,
-    provider: ctx
-  }
-
-  try {
-    const filePath = `./${process.env.SERVERLESS_HANDLER.split('.')[0]}.js`
-    delete require.cache[require.resolve(filePath)]
-    const library = require(filePath)
-    const functionName = process.env.SERVERLESS_HANDLER.split('.')[1]
-    if (e.Records) {
-      // aws async events
-      e.Records.forEach((event) => {
-        library[functionName](transformAsyncEvent(event), context)
-      })
-      cb(null, {})
-    } else {
-      // sync events: http or invoke
-      const returnValue = library[functionName](transformSyncEvent(e), context)
-      return Promise.resolve(returnValue)
-        .then((res) => cb(null, res))
-        .catch((err) => cb(err))
-    }
-  } catch (err) {
-    return cb(err)
-  }
+module.exports = {
+  transformAsyncEvent,
+  transformSyncEvent,
 }

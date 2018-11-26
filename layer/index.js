@@ -1,4 +1,5 @@
 const fetch = require('node-fetch')
+const shim = require('./shim')
 
 module.exports = async function() {
   console.log("Starting node sls runtime.")
@@ -33,14 +34,21 @@ module.exports = async function() {
 
     console.log(`Invoke received. Request ID: ${invocationId}`)
 
-    // Invoke the users's function
-    const handlerResp = await Promise.resolve(func(eventPayload))
+    // Invoke the users's function, converting event or events to CloudEvent form
+    let body
+    if (eventPayload.Records) {
+      await Promise.all(eventPayload.Records.map(shim.transformAsyncEvent).map(func))
+    }
+    else {
+      const handlerResp = await func(shim.transformSyncEvent(eventPayload))
+      body = JSON.stringify(handlerResp)
+    }
 
     // Send the response to Lambda Runtime
     await fetch(`${runtimeAPI}/invocation/${invocationId}/response`, {
       method: 'POST',
-      body: JSON.stringify(handlerResp), 
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body
     })
   }
 }

@@ -14,5 +14,9 @@ functions:
   hello:
     handler: handler.hello
     layers:
-      - arn:aws:lambda:us-west-2:377024778620:layer:testRuntime:3
-      - arn:aws:lambda:us-west-2:377024778620:layer:testMiddleware:3
+      - arn:aws:lambda:us-west-2:377024778620:layer:testRuntime:5
+      - arn:aws:lambda:us-west-2:377024778620:layer:testMiddleware:5
+    events:
+      - http:
+          path: /
+          method: GET

@@ -1,3 +1,3 @@
 module.exports.hello = (event) => {
-  return process.env
+  return {body: JSON.stringify(event)}
 }
