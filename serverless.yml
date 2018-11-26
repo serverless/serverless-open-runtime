@@ -2,6 +2,7 @@ service: test-runtime
 
 provider:
   name: aws
+  region: us-west-2
 
 plugins:
   - serverless-lambda-layers

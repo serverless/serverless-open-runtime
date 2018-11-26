@@ -1,0 +1,18 @@
+service: sls-node-test
+
+#frameworkVersion: ">=1.34.0"
+
+provider:
+  name: aws
+  runtime: provided
+  region: us-west-2
+  timeout: 60
+  environment:
+    SLSMIDDLEWARES: test-middleware
+
+functions:
+  hello:
+    handler: handler.hello
+    layers:
+      - arn:aws:lambda:us-west-2:377024778620:layer:testRuntime:3
+      - arn:aws:lambda:us-west-2:377024778620:layer:testMiddleware:3

@@ -28,7 +28,7 @@ module.exports = async function() {
     const invocationResp = await fetch(`${runtimeAPI}/invocation/next`)
 
     // get the invocation ID & parse the event payload
-    const invocationId = invocationResp.headers.get('x-amz-aws-request-id')
+    const invocationId = invocationResp.headers.get('lambda-runtime-aws-request-id')
     const eventPayload = await invocationResp.json()
 
     console.log(`Invoke received. Request ID: ${invocationId}`)

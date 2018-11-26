@@ -11,14 +11,23 @@ When done it will feature (exact list TBD):
  * more!
 
 ## Try it out
-You need to use our whitelisted AWS account, msg @dschep for info.
+You need to use our whitelisted AWS account: 377024778620
 
-The test script utilizes the awscli instead of Serverless Framework because AWS hasn't finialized
-CloudFormation support for layers yet.
+First, you need to install non-public sls layers branch & configure aws-sdk for layers:
+```shell
+git clone git@github.com:serverless/nda-serverless
+cd nda-serverless
+git checkout layers
+npm i -g .
+cd ..
+clone git@github.com:serverless/lambda-layers-plugin
+cp lambda-layers-plugin/lambda-2015-03-31.normal.json $(dirname $(dirname $(which sls)))/lib/node_modules/serverless/node_modules/aws-sdk/apis/lambda-2015-03-31.min.json
+```
 
 ```shell
-sls layers deploy # deploy the runtime & a test middleware layer
-./test.sh # create a lambda with example/handler.js & execute it & delete it
+cd example
+sls deplopy
+sls invoke -f hello
 ```
 
 ## Middlewares
