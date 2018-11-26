@@ -5,7 +5,7 @@ This uses AWS's Runtime API for Lambda to implement a more universal runtime for
 It is deployed using the [serverless-lambda-layer plugin](https://github.com/serverless/lambda-layers-plugin)
 
 When done it will feature (exact list TBD):
- * [CloudEvent]() based function signature
+ * [CloudEvent](https://cloudevents.io/) based function signature
  * [Middlewares](#Middlewares)
  * Graceful timeout handling
  * more!
