@@ -1,4 +1,4 @@
-# The Serverless NodeJS Runtime for AWS Lambda
+# The Serverless Open Runtime for AWS Lambda (Proof of Concept)
 
 This uses AWS's Runtime API for Lambda to implement a more universal runtime for Node JS.
 
