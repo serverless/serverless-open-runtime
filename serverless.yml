@@ -1,15 +1,14 @@
-service: test-runtime
+service: serverless-open-runtime
+
+#frameworkVersion: ">=1.34.0"
 
 provider:
   name: aws
-  region: us-west-2
 
-plugins:
-  - serverless-lambda-layers
+package:
+  exclude:
+    - 'node-v*-linux-x64.tar.xz'
 
 layers:
   testRuntime: # TODO rename (holding off bc of the permanant nature of layers)
-    buildScript: ./build.sh
     path: layer
-  testMiddleware:
-    path: middleware

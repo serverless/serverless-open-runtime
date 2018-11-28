@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const shim = require('./shim')
+const middleware = require('./middleware')
 
 module.exports = async function() {
   console.log("Starting node sls runtime.")
@@ -18,8 +19,7 @@ module.exports = async function() {
 
   // Apply any middlewares
   for (const middlewareName of (process.env.SLSMIDDLEWARES||'').split(',')) {
-    const middleware = require(middlewareName)
-    func = middleware(func)
+    func = middleware(middlewareName)(func)
   }
 
 

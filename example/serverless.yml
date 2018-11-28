@@ -5,7 +5,6 @@ service: sls-node-test
 provider:
   name: aws
   runtime: provided
-  region: us-west-2
   timeout: 60
   environment:
     SLSMIDDLEWARES: test-middleware
@@ -14,9 +13,13 @@ functions:
   hello:
     handler: handler.hello
     layers:
-      - arn:aws:lambda:us-west-2:377024778620:layer:testRuntime:5
-      - arn:aws:lambda:us-west-2:377024778620:layer:testMiddleware:5
+      - arn:aws:lambda:us-east-1:377024778620:layer:testRuntime:7
+      - {Ref: TestMiddlewareLambdaLayer}
     events:
       - http:
           path: /
           method: GET
+
+layers:
+  testMiddleware:
+    path: middleware
