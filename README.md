@@ -1,12 +1,11 @@
 # The Serverless Open Runtime for AWS Lambda (Proof of Concept)
 
-This uses AWS's Runtime API for Lambda to implement a more universal runtime for Node JS.
-
-It is deployed using the [serverless-lambda-layer plugin](https://github.com/serverless/lambda-layers-plugin)
+This uses AWS's Runtime API for Lambda to implement a universal runtime.
 
 When done it will feature (exact list TBD):
  * [CloudEvent](https://cloudevents.io/) based function signature
- * [Middlewares](#Middlewares)
+ * [Middlewares](#middlewares)
+ * [Language Agnostic](#language-agnostic)
  * Graceful timeout handling
  * more!
 
@@ -23,6 +22,7 @@ cd ..
 ```
 
 ```shell
+./build.sh
 sls deploy
 # Update ARN in example/serverless.yml with the one that was just printed in the deploy
 cd example
@@ -40,3 +40,35 @@ Middlewares are best stored in layers and must be stored in the `middlewares` di
 
 To specify the handler middlewares your function should use, set the `SLSMIDDLEWARES` environment
 variable to a comma delimited list of middlewares by the filename of the middleware executable.
+*Note:* it's possible to make a layer imply a middleware by searching for the file of the same name
+as the layer, but it requires an API call to get the lambda's configuration at runtime startup
+(slower cold start) and might be more AWS specific than is desireable.
+
+### Middleware specifics example
+If you set `SLSMIDDLEWARES=test` when an event, say `{"foo": "bar"}` is recieved, the equivalent
+following will be executed:
+```
+echo '{"foo": "bar"}' | /opt/middlewares/test before
+```
+and the STDOUT of the that execution will be read and replace the original event.
+
+Then, when the user handler returns a response, say: `{"body": "hello"}` the middleware will
+similarlly be invoked as the equivalent of:
+```
+echo '{"body": "hello"}' | /opt/middlewares/test after
+```
+and the STDOUT will replace the original response.
+
+## Language Agnostic
+The current Proof of Concept is implemented in NodeJS 10, but the final open runtime
+will likely be implemented in Go. A language runtime will be specified to the open
+runtime to support specific languages.
+
+This allows the open runtime to have a single implementation  while supporting many languages.
+There are two main ideas for how to implement a language runtime:
+ * The language runtime is invoked all middlewares have processed the event
+   * pro: simplicity
+   * con: startup cost associated with languages (eg: Java & Python)
+ * The runtime starts the language runtime at startup and communicates with it
+   * pro: no startup cost per request
+   * con: more complicated
