@@ -6,7 +6,7 @@ When done it will feature (exact list TBD):
  * [CloudEvent](https://cloudevents.io/) based function signature
  * [Middlewares](#middlewares)
  * [Language Agnostic](#language-agnostic)
- * Graceful timeout handling
+ * Graceful timeout handling - [poc branch](https://github.com/serverless/open-runtime-poc/tree/timeout-test)
  * more!
 
 ## Try it out
