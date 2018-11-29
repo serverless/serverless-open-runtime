@@ -59,6 +59,10 @@ echo '{"body": "hello"}' | /opt/middlewares/test after
 ```
 and the STDOUT will replace the original response.
 
+### Potential downsides of this middleware architecture
+How will can this be leveraged to implement APM style monitoring that usually
+monkeypatches language constructs.
+
 ## Language Agnostic
 The current Proof of Concept is implemented in NodeJS 10, but the final open runtime
 will likely be implemented in Go. A language runtime will be specified to the open
