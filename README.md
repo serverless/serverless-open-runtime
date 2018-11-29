@@ -13,39 +13,30 @@ When done it will feature (exact list TBD):
 ## Try it out
 You need to use our whitelisted AWS account: 377024778620
 
-First, you need to install non-public sls layers branch & configure aws-sdk for layers:
+First, you need to install private sls layers branch & configure aws-sdk for layers:
 ```shell
 git clone git@github.com:serverless/nda-serverless
 cd nda-serverless
 git checkout layers
 npm i -g .
 cd ..
-clone git@github.com:serverless/lambda-layers-plugin
-cp lambda-layers-plugin/lambda-2015-03-31.normal.json $(dirname $(dirname $(which sls)))/lib/node_modules/serverless/node_modules/aws-sdk/apis/lambda-2015-03-31.min.json
 ```
 
 ```shell
+sls deploy
+# Update ARN in example/serverless.yml with the one that was just printed in the deploy
 cd example
 sls deploy
 sls invoke -f hello
 ```
 
 ## Middlewares
-The current proof of concept for middlewares is built around the decorator pattern. As such, a
-middleware should be a function that accepts a handler and returns a new handler. EG:
-```javascript
-const middleware = async (handler) => (event) => {
-  // do something before invocation
-  const resp = await handler(event)
-  // do something after invocation
-  return resp
-}
-```
+The current proof of concept for middlewares allows them to be written in any language
+by invoking the middleware as an executable with the event or response passed in via
+standard in & out. The first argument specifies the hook that is being invoked.
 
-Handlers must be async and can safely assume that the handler it is provided also is async.
-
-It is preferable to package a middleware as a layer, but that is optional. The main requirement is
-that it be `require`able and that the middleware be exported as default.
+Middlewares are best stored in layers and must be stored in the `middlewares` directory
+(IE: `/opt/middlewares/` inside the lambda execution environment)
 
 To specify the handler middlewares your function should use, set the `SLSMIDDLEWARES` environment
-variable to a comma delimited list of middlewares by the name by which they are to be `require`d
+variable to a comma delimited list of middlewares by the filename of the middleware executable.
