@@ -10,18 +10,10 @@ When done it will feature (exact list TBD):
  * more!
 
 ## Try it out
-You need to use our whitelisted AWS account: 377024778620
 
-First, you need to install private sls layers branch & configure aws-sdk for layers:
-```shell
-git clone git@github.com:serverless/nda-serverless
-cd nda-serverless
-git checkout layers
-npm i -g .
-cd ..
-```
 
 ```shell
+npm i -g serverless # make sure you have serverless framework verison 1.34.0 or greater
 ./build.sh
 sls deploy
 # Update ARN in example/serverless.yml with the one that was just printed in the deploy
