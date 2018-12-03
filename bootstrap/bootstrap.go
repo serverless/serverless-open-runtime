@@ -13,8 +13,8 @@ import (
 	"strings"
 )
 
-func getInvocation(runtimeApi string) (string, []byte) {
-	resp, err := http.Get(fmt.Sprintf("%s/invocation/next", runtimeApi))
+func getInvocation(runtimeAPI string) (string, []byte) {
+	resp, err := http.Get(fmt.Sprintf("%s/invocation/next", runtimeAPI))
 	if nil != err {
 		log.Fatalf("Error getting next invocation: %s", err.Error())
 	}
@@ -23,9 +23,9 @@ func getInvocation(runtimeApi string) (string, []byte) {
 	if nil != err {
 		log.Fatalf("Error reading invocation body: %s", err.Error())
 	}
-	invocationId := resp.Header["Lambda-Runtime-Aws-Request-Id"][0]
-	log.Printf("EVENT open-runtime %s %s", invocationId, body)
-	return invocationId, body
+	invocationID := resp.Header["Lambda-Runtime-Aws-Request-Id"][0]
+	log.Printf("EVENT open-runtime %s %s", invocationID, body)
+	return invocationID, body
 }
 
 func runMiddlewares(middlewares []string, hook string, body []byte) []byte {
@@ -52,7 +52,7 @@ func runMiddleware(name string, hook string, body []byte) []byte {
 }
 
 func main() {
-	runtimeApi := fmt.Sprintf("http://%s/2018-06-01/runtime", os.Getenv("AWS_LAMBDA_RUNTIME_API"))
+	runtimeAPI := fmt.Sprintf("http://%s/2018-06-01/runtime", os.Getenv("AWS_LAMBDA_RUNTIME_API"))
 	middlewares := strings.Split(os.Getenv("SLSMIDDLEWARES"), ",")
 
 	cmd := exec.Command("/opt/language-runtime", os.Getenv("_HANDLER"))
@@ -69,17 +69,17 @@ func main() {
 
 	go func(reader io.Reader) {
 		scanner := bufio.NewScanner(reader)
-		invocationId, body := getInvocation(runtimeApi)
+		invocationID, body := getInvocation(runtimeAPI)
 		body = runMiddlewares(middlewares, "before", body)
 		stdin.Write(body)
 		io.WriteString(stdin, "\n")
 		for scanner.Scan() {
 			response := scanner.Bytes()
 			response = runMiddlewares(middlewares, "after", response)
-			log.Printf("Response! %s", invocationId)
-			log.Printf("%s/invocation/%s/response", runtimeApi, invocationId)
+			log.Printf("Response! %s", invocationID)
+			log.Printf("%s/invocation/%s/response", runtimeAPI, invocationID)
 			_, err := http.Post(
-				fmt.Sprintf("%s/invocation/%s/response", runtimeApi, invocationId),
+				fmt.Sprintf("%s/invocation/%s/response", runtimeAPI, invocationID),
 				"application/json",
 				bytes.NewBuffer(response),
 			)
@@ -87,7 +87,7 @@ func main() {
 				log.Fatalf("Error POSTing response")
 			}
 			log.Print("done sending response")
-			invocationId, body = getInvocation(runtimeApi)
+			invocationID, body = getInvocation(runtimeAPI)
 			body = runMiddlewares(middlewares, "before", body)
 			stdin.Write(body)
 			io.WriteString(stdin, "\n")
