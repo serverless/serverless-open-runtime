@@ -5,7 +5,7 @@ service: sls-node-test
 provider:
   name: aws
   runtime: provided
-  timeout: 60
+  timeout: 10
   environment:
     SLSMIDDLEWARES: test-middleware
 
@@ -13,13 +13,16 @@ functions:
   hello:
     handler: handler.hello
     layers:
-      - arn:aws:lambda:us-east-1:377024778620:layer:testRuntime:7
-      - {Ref: TestMiddlewareLambdaLayer}
+      #- arn:aws:lambda:us-east-1:490103061721:layer:open-runtime:13
+      #- arn:aws:lambda:us-east-1:490103061721:layer:open-runtime-nodejs:13
+      - ${cf:serverless-open-runtime-dev.OpenRuntimeLambdaLayerExport}
+      - ${cf:serverless-open-runtime-dev.OpenRuntimeNodejsLambdaLayerExport}
+      - Ref: TestMiddlewareLambdaLayer
     events:
       - http:
           path: /
           method: GET
 
 layers:
-  testMiddleware:
-    path: middleware
+ testMiddleware:
+   path: middleware

@@ -1,4 +1,4 @@
-# The Serverless Open Runtime for AWS Lambda (Proof of Concept)
+# The Serverless Open Runtime for AWS Lambda
 
 This uses AWS's Runtime API for Lambda to implement a universal runtime.
 
@@ -14,16 +14,15 @@ When done it will feature (exact list TBD):
 
 ```shell
 npm i -g serverless # make sure you have serverless framework verison 1.34.0 or greater
-./build.sh
+make
 sls deploy
-# Update ARN in example/serverless.yml with the one that was just printed in the deploy
 cd example
 sls deploy
 sls invoke -f hello
 ```
 
 ## Middlewares
-The current proof of concept for middlewares allows them to be written in any language
+The current plan for middlewares allows them to be written in any language
 by invoking the middleware as an executable with the event or response passed in via
 standard in & out. The first argument specifies the hook that is being invoked.
 
@@ -61,10 +60,5 @@ will likely be implemented in Go. A language runtime will be specified to the op
 runtime to support specific languages.
 
 This allows the open runtime to have a single implementation  while supporting many languages.
-There are two main ideas for how to implement a language runtime:
- * The language runtime is invoked all middlewares have processed the event
-   * pro: simplicity
-   * con: startup cost associated with languages (eg: Java & Python)
- * The runtime starts the language runtime at startup and communicates with it
-   * pro: no startup cost per request
-   * con: more complicated
+A language-runtime will be started when the open-runtime starts and communicate with it via STDIN &
+STDOUT as it receives events. There is currently an implementation of this for nodejs 10

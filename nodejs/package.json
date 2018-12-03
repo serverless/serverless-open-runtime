@@ -1,15 +1,14 @@
 {
-  "name": "aws-sls-nodejs-runtime",
+  "name": "@serverless/open-runtime-nodejs",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "serverless.com",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.360.0",
-    "node-fetch": "^2.3.0"
+    "split": "^1.0.1"
   }
 }

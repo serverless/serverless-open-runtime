@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+module.exports.hello = (event) => {
+  return {body: JSON.stringify(event)}
+=======
+const Promise = require('bluebird')
+module.exports.hello = async (event) => {
+  await Promise.delay(1000*15)
+  return process.env
+>>>>>>> play around with timeout idea.
+}

@@ -8,7 +8,24 @@ provider:
 package:
   exclude:
     - 'node-v*-linux-x64.tar.xz'
+    - '**/*.go'
+    - '**/Makefile'
+    - '**/package*.json'
 
 layers:
-  testRuntime: # TODO rename (holding off bc of the permanant nature of layers)
-    path: layer
+  open-runtime:
+    path: bootstrap
+  open-runtime-nodejs:
+    path: nodejs
+resources:
+  Outputs:
+    OpenRuntimeLambdaLayerExport:
+        Value:
+          Ref: OpenDashruntimeLambdaLayer
+        Export:
+          Name: OpenRuntimeLambdaLayer
+    OpenRuntimeNodejsLambdaLayerExport:
+        Value:
+          Ref: OpenDashruntimeDashnodejsLambdaLayer
+        Export:
+          Name: OpenRuntimeNodejsLambdaLayer
