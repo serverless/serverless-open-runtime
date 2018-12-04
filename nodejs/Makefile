@@ -1,6 +1,7 @@
 VERSION := 10.13.0
 
 all:
+	rm -r nodejs
 	curl -O https://nodejs.org/dist/v${VERSION}/node-v${VERSION}-linux-x64.tar.xz
 	tar -xf node-v${VERSION}-linux-x64.tar.xz
 	mv node-v${VERSION}-linux-x64 nodejs

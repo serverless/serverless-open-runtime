@@ -11,7 +11,13 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 )
+
+func mkPipes() {
+	syscall.Mkfifo("/tmp/runtime-output", 0600)
+	syscall.Mkfifo("/tmp/runtime-input", 0600)
+}
 
 func getInvocation(runtimeAPI string) (string, []byte) {
 	resp, err := http.Get(fmt.Sprintf("%s/invocation/next", runtimeAPI))
@@ -55,24 +61,34 @@ func main() {
 	runtimeAPI := fmt.Sprintf("http://%s/2018-06-01/runtime", os.Getenv("AWS_LAMBDA_RUNTIME_API"))
 	middlewares := strings.Split(os.Getenv("SLSMIDDLEWARES"), ",")
 
+	mkPipes()
+
+	// start language runtime
 	cmd := exec.Command("/opt/language-runtime", os.Getenv("_HANDLER"))
 	cmd.Stderr = os.Stderr
-	stdin, err := cmd.StdinPipe()
-	if nil != err {
-		log.Fatalf("Error obtaining stdin: %s", err.Error())
+	cmd.Stdout = os.Stdout
+	if err := cmd.Start(); nil != err {
+		log.Fatalf("Error starting program: %s, %s", cmd.Path, err.Error())
 	}
-	stdout, err := cmd.StdoutPipe()
+
+	// open pipes
+	input, err := os.OpenFile("/tmp/runtime-input", os.O_RDWR, 0600)
 	if nil != err {
-		log.Fatalf("Error obtaining stdout: %s", err.Error())
+		log.Fatalf("Error obtaining input: %s", err.Error())
 	}
-	reader := bufio.NewReader(stdout)
+	output, err := os.OpenFile("/tmp/runtime-output", os.O_RDONLY, 0600)
+	if nil != err {
+		log.Fatalf("Error obtaining output: %s", err.Error())
+	}
+
+	reader := bufio.NewReader(output)
 
 	go func(reader io.Reader) {
 		scanner := bufio.NewScanner(reader)
 		invocationID, body := getInvocation(runtimeAPI)
 		body = runMiddlewares(middlewares, "before", body)
-		stdin.Write(body)
-		io.WriteString(stdin, "\n")
+		input.Write(body)
+		io.WriteString(input, "\n")
 		for scanner.Scan() {
 			response := scanner.Bytes()
 			response = runMiddlewares(middlewares, "after", response)
@@ -89,14 +105,10 @@ func main() {
 			log.Print("done sending response")
 			invocationID, body = getInvocation(runtimeAPI)
 			body = runMiddlewares(middlewares, "before", body)
-			stdin.Write(body)
-			io.WriteString(stdin, "\n")
+			input.Write(body)
+			io.WriteString(input, "\n")
 		}
 	}(reader)
-
-	if err := cmd.Start(); nil != err {
-		log.Fatalf("Error starting program: %s, %s", cmd.Path, err.Error())
-	}
 
 	cmd.Wait()
 }

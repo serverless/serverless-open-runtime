@@ -1,10 +1,16 @@
 #!/opt/nodejs/bin/node
 
-//require('/opt/nodejs')
+const fs = require('fs')
 const split = require('split')
-console.error("START open-runtime-nodejs")
+console.log("START open-runtime-nodejs")
 
-process.stdin.pipe(split()).on('data', processEvent)
+// Open named pipes
+const inFd = fs.openSync('/tmp/runtime-input', 'r')
+const outFd = fs.openSync('/tmp/runtime-output', 'w')
+
+fs.createReadStream(null, {fd: inFd})
+    .pipe(split())
+    .on('data', processEvent)
 
 module.paths.push(process.cwd())
 const [module_name, func_name] = process.argv[2].split('.')
@@ -14,11 +20,10 @@ const handler = package[func_name]
 function processEvent (event) {
   if (!event)
     return
-  console.error(`EVENT open-runtime-nodejs: ${JSON.stringify(event)}`)
+  console.log(`EVENT open-runtime-nodejs: ${JSON.stringify(event)}`)
   const parsedEvent = JSON.parse(event)
   const result = handler(event)
-  console.error(JSON.stringify(result))
 
-  console.log(`${JSON.stringify(result)}`)
+  fs.writeSync(outFd, `${JSON.stringify(result)}\n`)
 }
 
