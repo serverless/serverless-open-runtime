@@ -1,4 +1,4 @@
-service: sls-node-test
+service: open-runtime-python-test
 
 #frameworkVersion: ">=1.34.0"
 
@@ -6,8 +6,8 @@ provider:
   name: aws
   runtime: provided
   timeout: 10
-  environment:
-    SLSMIDDLEWARES: test-middleware
+  #environment:
+  #SLSMIDDLEWARES: test-middleware
 
 functions:
   hello:
@@ -16,13 +16,13 @@ functions:
       #- arn:aws:lambda:us-east-1:490103061721:layer:open-runtime:13
       #- arn:aws:lambda:us-east-1:490103061721:layer:open-runtime-nodejs:13
       - ${cf:serverless-open-runtime-dev.OpenRuntimeLambdaLayerExport}
-      - ${cf:serverless-open-runtime-dev.OpenRuntimeNodejsLambdaLayerExport}
-      - Ref: TestMiddlewareLambdaLayer
+      - ${cf:serverless-open-runtime-dev.OpenRuntimePythonLambdaLayerExport}
+        #- Ref: TestMiddlewareLambdaLayer
     events:
       - http:
           path: /
           method: GET
-
-layers:
- testMiddleware:
-   path: middleware
+          #
+          #layers:
+          # testMiddleware:
+          #   path: middleware

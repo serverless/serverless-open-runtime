@@ -1,0 +1,33 @@
+#!/opt/python/bin/python3 -u
+
+import importlib
+import json
+import sys
+
+print("START open-runtime-python")
+
+input_pipe = open('/tmp/runtime-input', 'r')
+output_pipe = open('/tmp/runtime-output', 'w')
+
+sys.path += [
+    '/var/task/',
+]
+
+module_name, func_name = sys.argv[1].rsplit('.', 1)
+module = importlib.import_module(module_name)
+handler = getattr(module, func_name)
+
+while True:
+    #breakpoint()
+    try:
+        raw_event = input_pipe.readline()
+        if len(raw_event) == 0:
+            break
+        event = json.loads(raw_event)
+        print("EVENT open-runtime-python - {!r}".format(event))
+    except EOFError:
+        break
+    resp = handler(event)
+    json.dump(resp, output_pipe)
+    output_pipe.write('\n')
+    output_pipe.flush()

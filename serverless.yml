@@ -7,16 +7,32 @@ provider:
 
 package:
   exclude:
-    - 'node-v*-linux-x64.tar.xz'
+    # golang srcs
     - '**/*.go'
+    # common build stuff
     - '**/Makefile'
+    # node build stuff
     - '**/package*.json'
+    - 'node-v*-linux-x64.tar.xz'
+    - 'node-v*-linux-x64/**'
+    # python artifacts
+    - '**/*.a' # static libs
+    - 'Python-*.tar.zx' # source tar balls
+    - 'Python-*/**' # source dirs
+    # big python libraries that are useless in lambda
+    - '**/bin/idle*'
+    - '**/lib/python*/test/**'
+    - '**/lib/python*/idlelib/**'
+    - '**/lib/python*/tkinter/**'
+    - '**/lib/python*/turtledemo/**'
 
 layers:
   open-runtime:
     path: bootstrap
   open-runtime-nodejs:
     path: nodejs
+  open-runtime-python:
+    path: python
 resources:
   Outputs:
     OpenRuntimeLambdaLayerExport:
@@ -29,3 +45,8 @@ resources:
           Ref: OpenDashruntimeDashnodejsLambdaLayer
         Export:
           Name: OpenRuntimeNodejsLambdaLayer
+    OpenRuntimePythonLambdaLayerExport:
+        Value:
+          Ref: OpenDashruntimeDashpythonLambdaLayer
+        Export:
+          Name: OpenRuntimePythonLambdaLayer

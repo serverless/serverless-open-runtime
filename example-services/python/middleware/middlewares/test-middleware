@@ -1,0 +1,19 @@
+#!/opt/nodejs/bin/node
+
+const fs = require('fs');
+
+const middlewareHandlers = {
+  before: (event) => {
+    console.error('middleware before!')
+    return event;
+  },
+  after: (result) => {
+    console.error('middleware after!')
+    return result;
+  },
+}
+
+
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const output = middlewareHandlers[process.argv[2]](input)
+console.log(JSON.stringify(output))
