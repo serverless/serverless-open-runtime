@@ -27,15 +27,15 @@ func main() {
 	if nil != err {
 		log.Fatalf("Error obtaining output: %s", err.Error())
 	}
-	io.WriteString(input, "{\"asdf\": 53423}\n")
-	input.Close()
 	reader := bufio.NewReader(output)
 	go func(reader io.Reader) {
+		io.WriteString(input, "{\"asdf\": 53423}\n")
+		input.Close()
 		scanner := bufio.NewScanner(reader)
 		for scanner.Scan() {
 			log.Printf("result from sidecar: %s", scanner.Text())
 		}
 	}(reader)
-	cmd.Wait()
 
+	cmd.Wait()
 }
