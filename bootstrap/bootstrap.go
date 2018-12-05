@@ -59,7 +59,11 @@ func runMiddleware(name string, hook string, body []byte) []byte {
 
 func main() {
 	runtimeAPI := fmt.Sprintf("http://%s/2018-06-01/runtime", os.Getenv("AWS_LAMBDA_RUNTIME_API"))
-	middlewares := strings.Split(os.Getenv("SLSMIDDLEWARES"), ",")
+	middlewaresString := os.Getenv("SLSMIDDLEWARES")
+	var middlewares []string
+	if len(middlewaresString) > 0 {
+		middlewares = strings.Split(os.Getenv("SLSMIDDLEWARES"), ",")
+	}
 
 	mkPipes()
 
