@@ -54,6 +54,7 @@ func runMiddleware(name string, hook string, body []byte) []byte {
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
+	result = bytes.TrimSuffix(result, []byte("\n")) // middlewares can easilly add newlines by accident
 	return result
 }
 
