@@ -17,12 +17,12 @@ const [module_name, func_name] = process.argv[2].split('.')
 const package = require(module_name)
 const handler = package[func_name]
 
-function processEvent (event) {
+async function processEvent (event) {
   if (!event)
     return
   console.log(`EVENT open-runtime-nodejs: ${JSON.stringify(event)}`)
   const parsedEvent = JSON.parse(event)
-  const result = handler(event)
+  const result = await handler(parsedEvent)
 
   fs.writeSync(outFd, `${JSON.stringify(result)}\n`)
 }
