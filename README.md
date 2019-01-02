@@ -21,6 +21,20 @@ sls deploy
 sls invoke -f hello
 ```
 
+## NodeJS debugging!
+The open runtime implementation Node JS supports remote debugging. To use it:
+1. ensure you have a high timeout on your lambda (or else it'll be killed while debugging)
+2. on a publicly accessible server, install `socat` and run:
+   ```
+   socat -v TCP-LISTEN:9999,reuseaddr,fork TCP-LISTEN:4444,reuseaddr
+   ```
+3. invoke your lambda with the `_debugProxy` key in the event set to `1.1.1.1:4444` but changing
+   `1.1.1.1` to the IP address of the server you stared `socat` on:
+   ```
+   sls invoke -f hello -d '{"_debugProxy": "1.1.1.1:4444"}'
+   ```
+4. open the chrome debugger to [`chrome-devtools://devtools/bundled/inspector.html?ws=1.1.1.1:4444`](chrome-devtools://devtools/bundled/inspector.html?ws=1.1.1.1:4444) (again changing 1.1.1.1 to your server's IP)
+
 ## Middlewares
 The current plan for middlewares allows them to be written in any language
 by invoking the middleware as an executable with the event or response passed in via

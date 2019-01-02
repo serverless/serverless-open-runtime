@@ -5,7 +5,7 @@ service: open-runtime-node-test
 provider:
   name: aws
   runtime: provided
-  timeout: 10
+  timeout: 900
   environment:
     SLSMIDDLEWARES: test-middleware
 

@@ -2,6 +2,9 @@
 
 const fs = require('fs')
 const split = require('split')
+const inspector = require('inspector')
+const { spawn } = require('child_process')
+
 console.log("START open-runtime-nodejs")
 
 // Open named pipes
@@ -21,8 +24,20 @@ async function processEvent (event) {
   if (!event)
     return
   console.log(`EVENT open-runtime-nodejs: ${JSON.stringify(event)}`)
+
   const parsedEvent = JSON.parse(event)
+
+  let debuggerProxy
+  if (parsedEvent._debugProxy) {
+    debuggerProxy = spawn("socat", ["TCP:localhost:9229,forever", `TCP:${parsedEvent._debugProxy}`])
+    inspector.open(9229, "localhost", true)
+  }
+
   const result = await handler(parsedEvent)
+
+  if (parsedEvent._debugProxy) {
+      debuggerProxy.kill()
+  }
 
   fs.writeSync(outFd, `${JSON.stringify(result)}\n`)
 }
